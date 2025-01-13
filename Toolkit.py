@@ -36,13 +36,12 @@ class Toolkit:
         """Return a string representation of the Toolkit instance."""
         return f"{self.__repr__()}\n- List: {self.__len__()} proxies\n"
 
-    # Version
     @property
     def version(self):
         """Return the version of the ProxyToolkit."""
-        return "v1.0"
+        return "v1.1"
 
-    # Echo, Print, Write
+    # Built-in: Echo, Print, Write
     @staticmethod
     def echo(*args, color: str | tuple = None, bgcolor: str | tuple = None, sep: str = ' ', end: str = '\n') -> None:
         """
@@ -125,7 +124,7 @@ class Toolkit:
         else:
             print(message, end=end)
 
-    # Read: any file
+    # Built-in: Read any file
     def read_a_file(self, path: str) -> str:
         """
         Read the content of a file.
@@ -153,7 +152,7 @@ class Toolkit:
             # Output error message with details of the exception.
             self.echo(f"[Error:] Reading file error '{path}'\n{e}", color="red")
 
-    # Import: TXT
+    # Import TXT
     def import_standard_txt(self, path: str) -> list:
         """
         Imports proxies from a standard TXT file.
@@ -198,7 +197,7 @@ class Toolkit:
             # Output error message with details of the exception.
             self.echo(f"[Error:] Reading proxies error\n{e}", color="red")
 
-    # Import: JSON
+    # Import JSON
     def import_standard_json(self, path: str) -> list:
         """
         Imports proxies from a standard JSON file.
@@ -243,7 +242,7 @@ class Toolkit:
             # Output error message with details of the exception.
             print(f"[Error:] Reading proxy information from JSON file: {e}")
 
-    # Core: SOCKS
+    # Built-in: (Core) SOCKS
     def check_socks_proxy(self, ip: str, port: int, protocol: str, timeout: int = 9) -> dict:
         """
         Check the status of a SOCKS proxy.
@@ -304,7 +303,7 @@ class Toolkit:
             # Reset default proxy settings to None after the request is complete.
             socks.set_default_proxy(None)
 
-    # Core: HTTPS
+    # Built-in: (Core) HTTPS
     def check_http_proxy(self, ip: str, port: int, protocol: str, timeout: int = 9) -> dict:
         """
         Check the status of an HTTP/HTTPS proxy.
@@ -321,8 +320,12 @@ class Toolkit:
 
         # Construct the proxy dictionary for HTTP and HTTPS.
         proxies = {
+            # HTTP TARGET
             "http": f"http://{ip}:{int(port)}",
             "https": f"http://{ip}:{int(port)}"
+            # HTTPS TARGET
+            # "http": f"https://{ip}:{int(port)}"
+            # "https": f"https://{ip}:{int(port)}"
         }
 
         # Record the start time for the proxy check.
@@ -358,7 +361,7 @@ class Toolkit:
                 'error': str(e)
             }
 
-    # Present: theProxy
+    # Built-in: Present theProxy (for 'check_the_proxy')
     def present_the_proxy(self, response: dict) -> None:
         """
         Present the results of a proxy check.
@@ -392,7 +395,7 @@ class Toolkit:
             self.echo(f"[Time:] {response['time']}", color="red", bgcolor="darkgray")
             self.echo(f"[Error:] {response['error'][:125]}...", color="red", bgcolor="darkgray")
 
-    # Add: theProxy
+    # Built-in: Add theProxy to 'self.proxies' list  (for 'check_the_proxy')
     def add_the_proxy(self, response: dict, verbose: bool = True) -> None:
         """
         Adds a proxy to the list if it is alive and optionally prints the proxy details.
@@ -428,7 +431,7 @@ class Toolkit:
         # Print a newline character to separate output
         self.echo(end='\n')
 
-    # Check: theProxy
+    # Built-in: Check theProxy
     def check_the_proxy(self, ip: str, port: int, protocol: str, timeout: int = 9) -> dict:
         """
         Checks the status of a single proxy based on its protocol.
@@ -473,7 +476,7 @@ class Toolkit:
                 'error': str(e)
             }
 
-    # Check: Proxies
+    # Check list of Proxies (with 'check_the_proxy')
     def check_the_proxies(self, proxy_list: list, timeout: int = 9, verbose: bool = True) -> None:
         """
         Checks the status of multiple proxies and adds them to the list if they are alive.
@@ -520,3 +523,44 @@ class Toolkit:
 
         # Display the final list of proxies
         self.echo(self.__str__())
+
+    def help(self):
+        tree = """
+        Display available methods and properties in Toolkit.
+        # Built-in function is not for users.
+
+        - Toolkit Version:
+
+            # Magic Functions
+                __init__                            # Built-in
+                __len__                             # Built-in
+                __repr__                            # Built-in
+                __str__                             # Built-in
+
+            # Property
+                version                             # Built-in
+
+            # Present text
+                echo                                # Built-in  (font color)
+
+            # Read Files
+                read_a_file                         # Built-in  (simple file reader)
+                import_standard_txt                 # For importing standard text files
+                import_standard_json                # For importing standard JSON files
+
+            # Check proxy | Core functions
+                check_socks_proxy                   # Built-in
+                check_http_proxy                    # Built-in
+
+            # Handle the proxy checking
+                present_the_proxy                   # Built-in  (verbose proxy result)
+                add_the_proxy                       # Built-in  (add a live proxy to 'proxies' list)
+                check_the_proxy                     # Built-in  (combine 'check_socks_proxy' & 'check_http_proxy')
+
+            # Prime function
+                check_the_proxies                   # For checking list of proxies
+            
+            # Help
+                help                                # Built-in (Toolkit help)
+        """
+        self.echo("info:\n",tree, "\n- Read documentations for more information\n", color='blue')
