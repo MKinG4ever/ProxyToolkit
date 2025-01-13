@@ -48,8 +48,9 @@ class Geonode(Toolkit):
     @property
     def version(self):
         """Return the version of the GeoNode:ProxyToolkit."""
-        return "v2.1"
+        return "v2.2"
 
+    # Save any data as json file
     def save_as_json(self, data: list or dict, path: str) -> None:
         """
         Save data as a JSON file.
@@ -132,7 +133,7 @@ class Geonode(Toolkit):
         # Complete URL
         complete_url = f"{base_url}?{query_string}"
 
-        self.echo(f'[URL:] {complete_url}', end='\n')
+        self.echo(f'[URL:] {complete_url}\n')
         return complete_url
 
     # Get DATA from web
@@ -160,7 +161,7 @@ class Geonode(Toolkit):
         except requests.exceptions.RequestException as e:
             # Handle any exceptions that occur during the request
             self.echo('Unsuccessful', color='red', bgcolor='darkgray', end='\n')
-            self.echo(f"[Error:] fetching data from: '{api_url}'\n{e}")
+            self.echo(f"[Error:] fetching data from: '{api_url}'\n{e}\n")
 
             return {"error": str(e)}
 
@@ -188,7 +189,7 @@ class Geonode(Toolkit):
             self.echo(f'[Error:] Load file as JSON module:\n{e}')
             return {"error": str(e)}
 
-    # Turn DATA to list of pure proxies ('ip', 'port', 'protocol' only)
+    # Turn DATA to list of pure proxies ('ip', 'port', 'protocol' only) from standard dict
     def export_proxies(self, data: dict) -> list:
         """
         Extract a list of proxies from the provided data.
@@ -201,8 +202,9 @@ class Geonode(Toolkit):
 
         self.echo(f'Proxies exporting:', end=' ')
 
-        for proxy in data['data']:  # GeoNode API Data
-            try:
+        try:
+            for proxy in data['data']:  # GeoNode API Data
+
                 ip = proxy.get('ip', '')  # Extract IP address or default to empty string if not present
                 port = proxy.get('port', '')  # Extract port number or default to empty string if not present
                 protocol = proxy.get('protocols', '')  # Extract protocols or default to an empty list if not present
@@ -215,16 +217,17 @@ class Geonode(Toolkit):
 
                 proxies_list.append(extract)
 
-            except Exception as e:
-                self.echo(f"[Error:] reading proxy information from JSON file: {e}", color='red')
-                continue
+        except Exception as e:
+            self.echo('Unsuccessful', color='red', bgcolor='darkgray', end='\n')
+            self.echo(f"[Error:{e}] reading proxy information from JSON file\n", color='red')
+        else:
+            self.echo('Done', color='green', bgcolor='darkgray', end='\n')
 
-        self.echo('Done', color='green', bgcolor='darkgray', end='\n')
         # Return the list
         return proxies_list
 
     # Cut pure proxies ('ip', 'port', 'protocol' only) from standard lists
-    def cut_proxy(self, proxies: list) -> list:
+    def cut_proxies(self, proxies: list) -> list:
         """
         Extract only 'ip', 'port', and 'protocol' from a list of proxies.
 
@@ -255,54 +258,62 @@ class Geonode(Toolkit):
         return proxies_list
 
     def help(self):
-        """
+        geo_tree = """
         Display available methods and properties in Geonode and Toolkit.
-
-        - Toolkit Version
+        # Built-in function is not for users.
+        
+        - Toolkit Version:
 
             # Magic Functions
-                __init__
-                __len__
-                __repr__
-                __str__
+                __init__                            # Built-in
+                __len__                             # Built-in
+                __repr__                            # Built-in
+                __str__                             # Built-in
 
             # Property
-                version
+                version                             # Built-in
 
             # Present text
-                echo
+                echo                                # Built-in  (font color)
 
             # Read Files
-                read_a_file
-                import_standard_txt
-                import_standard_json
+                read_a_file                         # Built-in  (simple file reader)
+                import_standard_txt                 # For importing standard text files
+                import_standard_json                # For importing standard JSON files
 
             # Check proxy | Core functions
-                check_socks_proxy
-                check_http_proxy
+                check_socks_proxy                   # Built-in
+                check_http_proxy                    # Built-in
 
             # Handle the proxy checking
-                present_the_proxy
-                add_the_proxy
-                check_the_proxy
+                present_the_proxy                   # Built-in  (verbose proxy result)
+                add_the_proxy                       # Built-in  (add a live proxy to 'proxies' list)
+                check_the_proxy                     # Built-in  (combine 'check_socks_proxy' & 'check_http_proxy')
 
             # Prime function
-                check_the_proxies
+                check_the_proxies                   # For checking list of proxies
+            
+            # Help
+                help                                # Built-in (Toolkit help)
 
-        - Geonode Version
+
+        - Geonode Version:
 
             # Save as JSON
-                save_as_json
+                save_as_json                        # Save any data including proxies as JSON
 
             # Handle Geonode API
-                generate_url
-                fetch_api
-                read_api
+                generate_url                        # Generate URL for GEONODE API
+                fetch_api                           # Fetch API Data from URL
+                read_api                            # Read API Data from file
 
-            # Export proxies from data
-                export_proxies
+            # Export proxies from Geonode API data
+                export_proxies                      # Export proxies from Geonode API Data (Fetch/Read)
 
-            # Cut only proxies (ip, port, protocol) from data
-                cut_proxy
+            # Cut only proxies (ip, port, protocol) from list
+                cut_proxies                         # Cut only proxies from a list
+            
+            # Help
+                help                                # Built-in (GeoNode Help)
         """
-        self.echo("Read documentations for more information", color='blue')
+        self.echo("info:\n", geo_tree, "\n- Read documentations for more information\n", color='blue')
